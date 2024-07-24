@@ -8,21 +8,26 @@ function App() {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedState, setSelectedState] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchCountries();
   }, []);
 
   const fetchCountries = async () => {
+    setLoading(true);
+    setError('');
     try {
       const response = await axios.get('https://crio-location-selector.onrender.com/countries');
       console.log('Countries fetched:', response.data);
-      // Trim whitespace and remove duplicates
       const sanitizedCountries = [...new Set(response.data.map(country => country.trim()))];
       setCountries(sanitizedCountries);
     } catch (error) {
+      setError('Error fetching countries');
       console.error('Error fetching countries:', error);
     }
+    setLoading(false);
   };
 
   const fetchStates = async (countryName) => {
@@ -30,7 +35,8 @@ function App() {
       console.error('No country selected');
       return;
     }
-
+    setLoading(true);
+    setError('');
     try {
       const response = await axios.get(`https://crio-location-selector.onrender.com/country=${encodeURIComponent(countryName)}/states`);
       console.log(`States fetched for ${countryName}:`, response.data);
@@ -38,9 +44,11 @@ function App() {
       setCities([]);
       setSelectedCity('');
     } catch (error) {
+      setError(`Error fetching states for ${countryName}`);
       console.error(`Error fetching states for ${countryName}:`, error);
       setStates([]);
     }
+    setLoading(false);
   };
 
   const fetchCities = async (countryName, stateName) => {
@@ -48,15 +56,18 @@ function App() {
       console.error('No country or state selected');
       return;
     }
-
+    setLoading(true);
+    setError('');
     try {
       const response = await axios.get(`https://crio-location-selector.onrender.com/country=${encodeURIComponent(countryName)}/state=${encodeURIComponent(stateName)}/cities`);
       console.log(`Cities fetched for ${stateName}, ${countryName}:`, response.data);
       setCities(response.data);
     } catch (error) {
+      setError(`Error fetching cities for ${stateName}, ${countryName}`);
       console.error(`Error fetching cities for ${stateName}, ${countryName}:`, error);
       setCities([]);
     }
+    setLoading(false);
   };
 
   const handleCountryChange = (event) => {
@@ -78,6 +89,8 @@ function App() {
   return (
     <div>
       <h1>Select Location</h1>
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <div>
         <label>Select Country: </label>
         <select value={selectedCountry} onChange={handleCountryChange}>
