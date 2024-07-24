@@ -16,29 +16,46 @@ function App() {
   const fetchCountries = async () => {
     try {
       const response = await axios.get('https://crio-location-selector.onrender.com/countries');
-      setCountries(response.data);
+      console.log('Countries fetched:', response.data); // Debugging line
+      // Trim whitespace from country names
+      const sanitizedCountries = response.data.map(country => country.trim());
+      setCountries(sanitizedCountries);
     } catch (error) {
       console.error('Error fetching countries:', error);
     }
   };
 
   const fetchStates = async (countryName) => {
+    if (!countryName) {
+      console.error('No country selected');
+      return;
+    }
+
     try {
-      const response = await axios.get(`https://crio-location-selector.onrender.com/country=${countryName}/states`);
+      const response = await axios.get(`https://crio-location-selector.onrender.com/country=${encodeURIComponent(countryName)}/states`);
+      console.log(`States fetched for ${countryName}:`, response.data); // Debugging line
       setStates(response.data);
       setCities([]);
       setSelectedCity('');
     } catch (error) {
-      console.error('Error fetching states:', error);
+      console.error(`Error fetching states for ${countryName}:`, error);
+      setStates([]);
     }
   };
 
   const fetchCities = async (countryName, stateName) => {
+    if (!countryName || !stateName) {
+      console.error('No country or state selected');
+      return;
+    }
+
     try {
-      const response = await axios.get(`https://crio-location-selector.onrender.com/country=${countryName}/state=${stateName}/cities`);
+      const response = await axios.get(`https://crio-location-selector.onrender.com/country=${encodeURIComponent(countryName)}/state=${encodeURIComponent(stateName)}/cities`);
+      console.log(`Cities fetched for ${stateName}, ${countryName}:`, response.data); // Debugging line
       setCities(response.data);
     } catch (error) {
-      console.error('Error fetching cities:', error);
+      console.error(`Error fetching cities for ${stateName}, ${countryName}:`, error);
+      setCities([]);
     }
   };
 
@@ -65,8 +82,8 @@ function App() {
         <label>Select Country: </label>
         <select value={selectedCountry} onChange={handleCountryChange}>
           <option>Select Country</option>
-          {countries.map((country) => (
-            <option key={country.name} value={country.name}>{country.name}</option>
+          {countries.map((country, index) => (
+            <option key={index} value={country}>{country}</option>
           ))}
         </select>
       </div>
@@ -74,8 +91,8 @@ function App() {
         <label>Select State: </label>
         <select value={selectedState} onChange={handleStateChange} disabled={!selectedCountry}>
           <option>Select State</option>
-          {states.map((state) => (
-            <option key={state.name} value={state.name}>{state.name}</option>
+          {states.map((state, index) => (
+            <option key={index} value={state}>{state}</option>
           ))}
         </select>
       </div>
@@ -83,8 +100,8 @@ function App() {
         <label>Select City: </label>
         <select value={selectedCity} onChange={handleCityChange} disabled={!selectedState}>
           <option>Select City</option>
-          {cities.map((city) => (
-            <option key={city.name} value={city.name}>{city.name}</option>
+          {cities.map((city, index) => (
+            <option key={index} value={city}>{city}</option>
           ))}
         </select>
       </div>
