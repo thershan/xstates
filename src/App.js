@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './App.css';
 
 function App() {
   const [countries, setCountries] = useState([]);
@@ -87,36 +88,38 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="app">
       <h1>Select Location</h1>
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <div>
-        <label>Select Country: </label>
-        <select value={selectedCountry} onChange={handleCountryChange}>
-          <option>Select Country</option>
-          {countries.map((country, index) => (
-            <option key={index} value={country}>{country}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label>Select State: </label>
-        <select value={selectedState} onChange={handleStateChange} disabled={!selectedCountry}>
-          <option>Select State</option>
-          {states.map((state, index) => (
-            <option key={index} value={state}>{state}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label>Select City: </label>
-        <select value={selectedCity} onChange={handleCityChange} disabled={!selectedState}>
-          <option>Select City</option>
-          {cities.map((city, index) => (
-            <option key={index} value={city}>{city}</option>
-          ))}
-        </select>
+      {error && <p className="error">{error}</p>}
+      <div className="dropdown-container">
+        <div className="dropdown">
+          <label>Select Country: </label>
+          <select value={selectedCountry} onChange={handleCountryChange}>
+            <option>Select Country</option>
+            {countries.map((country, index) => (
+              <option key={index} value={country}>{country}</option>
+            ))}
+          </select>
+        </div>
+        <div className="dropdown">
+          <label>Select State: </label>
+          <select value={selectedState} onChange={handleStateChange} disabled={!selectedCountry}>
+            <option>Select State</option>
+            {states.map((state, index) => (
+              <option key={index} value={state}>{state}</option>
+            ))}
+          </select>
+        </div>
+        <div className="dropdown">
+          <label>Select City: </label>
+          <select value={selectedCity} onChange={handleCityChange} disabled={!selectedState}>
+            <option>Select City</option>
+            {cities.map((city, index) => (
+              <option key={index} value={city}>{city}</option>
+            ))}
+          </select>
+        </div>
       </div>
       {selectedCountry && selectedState && selectedCity && (
         <h2>You selected {selectedCity}, {selectedState}, {selectedCountry}</h2>
