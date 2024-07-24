@@ -16,9 +16,9 @@ function App() {
   const fetchCountries = async () => {
     try {
       const response = await axios.get('https://crio-location-selector.onrender.com/countries');
-      console.log('Countries fetched:', response.data); // Debugging line
-      // Trim whitespace from country names
-      const sanitizedCountries = response.data.map(country => country.trim());
+      console.log('Countries fetched:', response.data);
+      // Trim whitespace and remove duplicates
+      const sanitizedCountries = [...new Set(response.data.map(country => country.trim()))];
       setCountries(sanitizedCountries);
     } catch (error) {
       console.error('Error fetching countries:', error);
@@ -33,7 +33,7 @@ function App() {
 
     try {
       const response = await axios.get(`https://crio-location-selector.onrender.com/country=${encodeURIComponent(countryName)}/states`);
-      console.log(`States fetched for ${countryName}:`, response.data); // Debugging line
+      console.log(`States fetched for ${countryName}:`, response.data);
       setStates(response.data);
       setCities([]);
       setSelectedCity('');
@@ -51,7 +51,7 @@ function App() {
 
     try {
       const response = await axios.get(`https://crio-location-selector.onrender.com/country=${encodeURIComponent(countryName)}/state=${encodeURIComponent(stateName)}/cities`);
-      console.log(`Cities fetched for ${stateName}, ${countryName}:`, response.data); // Debugging line
+      console.log(`Cities fetched for ${stateName}, ${countryName}:`, response.data);
       setCities(response.data);
     } catch (error) {
       console.error(`Error fetching cities for ${stateName}, ${countryName}:`, error);
