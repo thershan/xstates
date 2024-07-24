@@ -22,8 +22,7 @@ function App() {
     try {
       const response = await axios.get('https://crio-location-selector.onrender.com/countries');
       console.log('Countries fetched:', response.data);
-      const sanitizedCountries = [...new Set(response.data.map(country => country.trim()))];
-      setCountries(sanitizedCountries);
+      setCountries(response.data);
     } catch (error) {
       setError('Error fetching countries');
       console.error('Error fetching countries:', error);
